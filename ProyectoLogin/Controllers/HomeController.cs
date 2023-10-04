@@ -12,12 +12,10 @@ namespace ProyectoLogin.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        
-        public HomeController(ILogger<HomeController> logger)
+        private readonly LacyCompanyContext ContextoDatos;
+        public HomeController(LacyCompanyContext xContextoDatos)
         {
-            _logger = logger;
+            ContextoDatos = xContextoDatos;
         }
 
         public IActionResult Index()
@@ -47,10 +45,25 @@ namespace ProyectoLogin.Controllers
             return View();
         }
 
-        public IActionResult Views()
+        [HttpGet]
+        public IActionResult Formulario()
         {
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Formulario(Clientes xclientes)
+        {
+            if (ModelState.IsValid)
+            {
+                ContextoDatos.clientes.Add(xclientes);
+                await ContextoDatos.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
+
 
         public IActionResult Acerca()
         {
